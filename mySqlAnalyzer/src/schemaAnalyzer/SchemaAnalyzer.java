@@ -41,11 +41,9 @@ public class SchemaAnalyzer {
 	}
 	
 	private static String getJdbcLink(){
-		// "jdbc:postgresql://localhost/test?user=fred&password=secret&ssl=true"
+		
 		loadConnection();
 		return "jdbc:mysql://"+dbAddress+":"+dbPort+"/information_schema";
-		
-		
 	}	
 
 	private static void loadConnection() {
@@ -80,7 +78,6 @@ public class SchemaAnalyzer {
 		} catch (ParserConfigurationException ex) {
 			ex.printStackTrace();
 		}
-
 	}
 
 	private static String getTagValue(String sTag, Element eElement) {
@@ -104,9 +101,6 @@ public class SchemaAnalyzer {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-
-		return dbConnection;
-		
+		return dbConnection;		
 	}
-
 }
