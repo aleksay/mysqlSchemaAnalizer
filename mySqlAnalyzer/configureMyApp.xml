@@ -13,6 +13,6 @@ and open the template in the editor.
     <parameters>			<!-- not implemented yet -->
 	<parameter type=''></parameter>
     </parameters>
-    <jdbcLink></jdbcLink>            <!-- Se viene popolato il campo jdbcLink gli altri campi saranno ignorati  -->
+    <!--jdbcLink></jdbcLink-->            <!-- Se viene popolato il campo jdbcLink gli altri campi saranno ignorati  -->
 </connection>
 

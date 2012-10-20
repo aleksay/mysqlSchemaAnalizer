@@ -5,6 +5,9 @@ package schemaAnalyzer;
 
 import java.io.File;
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -29,24 +32,21 @@ public class SchemaAnalyzer {
 	private static String dbUser;
 	private static String dbPwd;
 	private static String dbSchema;
-	private static String dbparameter;
-	private static String jdbcLink;
+	//private static String dbparameter;
+	//private static String jdbcLink;
 
 	public static void main(String[] args) {
 
-		new SchemaSetup().createSchema();
+		new SchemaSetup().createSchema(createConnection(),dbSchema);
 	}
 	
 	private static String getJdbcLink(){
 		// "jdbc:postgresql://localhost/test?user=fred&password=secret&ssl=true"
+		loadConnection();
+		return "jdbc:mysql://"+dbAddress+":"+dbPort+"/information_schema";
 		
 		
-		
-		
-		
-		return "jdbc:mysql://"+dbAddress+":"+dbPort+"/"+dbSchema;
-		
-	}
+	}	
 
 	private static void loadConnection() {
 		try {
@@ -70,7 +70,7 @@ public class SchemaAnalyzer {
 				dbUser = getTagValue("user", eElement);
 				dbSchema = getTagValue("schema", eElement);
 			//	dbparameter = getTagValue("parameters",eElement);
-				jdbcLink = getTagValue("jdbcLink",eElement);
+			//	jdbcLink = getTagValue("jdbcLink",eElement);
 
 			}
 		} catch (SAXException ex) {
@@ -88,6 +88,25 @@ public class SchemaAnalyzer {
 				.getChildNodes();
 		Node nValue = (Node) nlList.item(0);
 		return nValue.getNodeValue();
+	}
+	
+	public static Connection createConnection(){
+		Connection dbConnection = null;
+		try {
+			Class.forName("com.mysql.jdbc.Driver");
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		try {
+			dbConnection = DriverManager.getConnection(getJdbcLink(),dbUser, dbPwd);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		return dbConnection;
+		
 	}
 
 }

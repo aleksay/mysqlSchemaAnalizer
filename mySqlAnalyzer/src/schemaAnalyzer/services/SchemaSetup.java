@@ -11,14 +11,10 @@ import schemaAnalyzer.Domain.*;
 
 public class SchemaSetup {
 
-	public void createSchema() {
+	public void createSchema(Connection dbConnection, String mySchema) {
 
 		try {
-			Class.forName("com.mysql.jdbc.Driver");
-			Connection dbConnection = DriverManager.getConnection(
-					"jdbc:mysql://192.168.0.155:3306/information_schema",
-					"root", "ale");
-
+			
 			Statement st = dbConnection.createStatement();
 			Statement st2 = dbConnection.createStatement();
 			/*
@@ -67,7 +63,7 @@ public class SchemaSetup {
 			 * relazione tra colonne acuulunate dal fatto di appartenere alla
 			 * stessa tabella.
 			 */
-			String mySchema = "information_schema";
+			
 			ResultSet columnTables = st
 					.executeQuery("select c1.column_name, c1.table_name from columns c1 where c1.table_schema='"
 							+ mySchema
@@ -187,9 +183,7 @@ public class SchemaSetup {
 			dbConnection.close();
 		} catch (SQLException ex) {
 			ex.printStackTrace();
-		} catch (ClassNotFoundException ex) {
-			ex.printStackTrace();
-		}
+		} 
 
 	}
 
