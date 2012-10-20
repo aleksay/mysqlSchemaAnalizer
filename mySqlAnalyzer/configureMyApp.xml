@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+To change this template, choose Tools | Templates
+and open the template in the editor.
+-->
+
+<connection>
+    <address>192.168.0.155</address>
+    <port>3306</port>
+    <user>root</user>
+    <password>ale</password>
+    <schema>information_schema</schema> 
+    <parameters>			<!-- not implemented yet -->
+	<parameter type=''></parameter>
+    </parameters>
+    <jdbcLink></jdbcLink>            <!-- Se viene popolato il campo jdbcLink gli altri campi saranno ignorati  -->
+</connection>
+

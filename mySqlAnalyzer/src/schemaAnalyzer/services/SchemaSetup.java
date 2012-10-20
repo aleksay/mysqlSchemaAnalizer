@@ -159,7 +159,7 @@ public class SchemaSetup {
 			 * tipo con lo stesso nome dellatabella c
 			 */
 
-			for (Column col : myCol) {
+/*			for (Column col : myCol) {
 				if (col.getTables().size() > 1) {
 					System.out.println(col);
 					Column origData = col.clone();
@@ -177,7 +177,9 @@ public class SchemaSetup {
 					col.setType(col.getName());
 				}
 			}
-
+*/  // java.util.ConcurrentModificationException
+			
+			
 			for (Table tab : myTab) {
 				System.out.println(tab.list());
 			}
