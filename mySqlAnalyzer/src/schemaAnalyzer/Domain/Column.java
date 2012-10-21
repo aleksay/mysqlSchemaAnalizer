@@ -75,7 +75,7 @@ public class Column implements Serializable, Cloneable  {
     @Override
     public String toString() {
 
-        return "column: " + name + " type: " + type + "\n";
+        return name + ";" + type + "\n";
         
     }
     public String list(){

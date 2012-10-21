@@ -1,22 +1,31 @@
 package schemaAnalyzer.services;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.LinkedList;
 
-import schemaAnalyzer.Domain.*;
+import schemaAnalyzer.Domain.Column;
+import schemaAnalyzer.Domain.Table;
 
 public class SchemaSetup {
 
+	
+	static final Logger logger = new Logger();
+	
 	public void createSchema(Connection dbConnection, String mySchema) {
 
 		try {
-			
+
 			Statement st = dbConnection.createStatement();
 			Statement st2 = dbConnection.createStatement();
+			
+			
+			
+			
+			
+			
 			/*
 			 * ResultSet info = st.executeQuery("select " + "TABLE_CATALOG, " +
 			 * "TABLE_SCHEMA," + "TABLE_NAME," + "COLUMN_NAME," +
@@ -63,7 +72,7 @@ public class SchemaSetup {
 			 * relazione tra colonne acuulunate dal fatto di appartenere alla
 			 * stessa tabella.
 			 */
-			
+
 			ResultSet columnTables = st
 					.executeQuery("select c1.column_name, c1.table_name from columns c1 where c1.table_schema='"
 							+ mySchema
@@ -124,7 +133,8 @@ public class SchemaSetup {
 
 				// System.out.println(tmpTab.list());
 
-				if (tmpTab.getName().equals("TABLE_SCHEMA") /*
+				//if (tmpTab.getName().equals("TABLE_SCHEMA") 
+				/*
 															 * ||
 															 * tmpTab.getName(
 															 * ).equals(
@@ -134,12 +144,12 @@ public class SchemaSetup {
 															 * ().equals
 															 * ("TABLE_CONSTRAINTS"
 															 * )
-															 */) {
-					System.out.println(tmpTab.list());
-				}
+															 *) {*/
+				//	System.out.println(tmpTab.list());
+				//}
 
 			}
-			System.out.println("fine");
+		//	System.out.println("fine");
 
 			/*
 			 * La colonna a_aname(di tipo string) e' condivisa fra la tabella a
@@ -154,15 +164,21 @@ public class SchemaSetup {
 			 * aggiornando il type delle colonne referenziate dalle tabelle al
 			 * tipo con lo stesso nome dellatabella c
 			 */
-
-/*			for (Column col : myCol) {
+			Column col;
+			Column[] myColFreeze = new Column[myCol.size()];
+			myCol.toArray(myColFreeze);
+			for (int i=0;i<myColFreeze.length;i++) {
+				
+				col = myColFreeze[i];
+				
 				if (col.getTables().size() > 1) {
-					System.out.println(col);
+				//	System.out.println(col);
 					Column origData = col.clone();
 
 					Table keyTab = new Table(col.getName());
 					Column id = new Column("id");
 					id.addTable(keyTab);
+					id.setType("int");
 					keyTab.addColumn(id);
 					keyTab.addColumn(origData);
 
@@ -173,18 +189,17 @@ public class SchemaSetup {
 					col.setType(col.getName());
 				}
 			}
-*/  // java.util.ConcurrentModificationException
-			
-			
+			// java.util.ConcurrentModificationException
+
 			for (Table tab : myTab) {
-				System.out.println(tab.list());
+				logger.append(tab.list());
 			}
 
 			dbConnection.close();
+			logger.close();
 		} catch (SQLException ex) {
+			logger.close();
 			ex.printStackTrace();
-		} 
-
+		}
 	}
-
 }

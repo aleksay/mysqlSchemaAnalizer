@@ -53,9 +53,13 @@ public class Table implements Serializable {
     }
     
     public String list(){
-        String z = this.toString();
+        
+    	
+    	
+    	
+    	String z = "";
         for (Column c : columns) {
-            z += "   " + c ;
+            z += this.name+";" + c ;
         }
         return z;
     }

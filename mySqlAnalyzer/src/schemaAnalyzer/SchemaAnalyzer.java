@@ -36,7 +36,7 @@ public class SchemaAnalyzer {
 	//private static String jdbcLink;
 
 	public static void main(String[] args) {
-
+ 
 		new SchemaSetup().createSchema(createConnection(),dbSchema);
 	}
 	
