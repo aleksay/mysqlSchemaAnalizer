@@ -4,28 +4,28 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Collections;
 import java.util.LinkedList;
+import java.util.List;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 import schemaAnalyzer.Domain.Column;
 import schemaAnalyzer.Domain.Table;
 
 public class SchemaSetup {
 
-	
 	static final Logger logger = new Logger();
-	
+	List<Column> myCol = Collections.synchronizedList(new LinkedList<Column>()); 
+	List<Table>  myTab = Collections.synchronizedList(new LinkedList<Table>()); 
+
 	public void createSchema(Connection dbConnection, String mySchema) {
 
 		try {
 
 			Statement st = dbConnection.createStatement();
 			Statement st2 = dbConnection.createStatement();
-			
-			
-			
-			
-			
-			
+
 			/*
 			 * ResultSet info = st.executeQuery("select " + "TABLE_CATALOG, " +
 			 * "TABLE_SCHEMA," + "TABLE_NAME," + "COLUMN_NAME," +
@@ -79,8 +79,6 @@ public class SchemaSetup {
 							+ "' and c1.column_name in (select distinct(c2.column_name) from columns c2 where c2.table_schema='"
 							+ mySchema + "') order by c1.column_name");
 
-			LinkedList<Column> myCol = new LinkedList<Column>();
-			LinkedList<Table> myTab = new LinkedList<Table>();
 			Column tmpCol;
 			Table tmpTab;
 
@@ -92,7 +90,7 @@ public class SchemaSetup {
 				// System.out.println("myCol.contains(tmpCol): " +
 				// myCol.contains(tmpCol));
 				if (!myCol.contains(tmpCol)) {
-
+					
 					ResultSet result = st2
 							.executeQuery("SELECT DATA_TYPE from COLUMNS where COLUMN_NAME='"
 									+ tmpCol.getName() + "'");
@@ -102,95 +100,39 @@ public class SchemaSetup {
 					}
 
 					String sqlType = result.getString(1);
-					if (sqlType.equals("int") || sqlType.equals("char")
-							|| sqlType.equals("enum")) {
-						tmpCol.setType(TypeMatching.getJavaType(SqlTypes
-								.valueOf("sql_" + sqlType)));
+					if (sqlType.equals("int") || sqlType.equals("char") || sqlType.equals("enum")) {
+						tmpCol.setType(TypeMatching.getJavaType(SqlTypes.valueOf("sql_" + sqlType)));
 					} else {
-						tmpCol.setType(TypeMatching.getJavaType(SqlTypes
-								.valueOf(sqlType)));
-						;
+						tmpCol.setType(TypeMatching.getJavaType(SqlTypes.valueOf(sqlType)));
+						
 					}
 
-					myCol.add(tmpCol);
+					synchronized (myCol) {
+						myCol.add(tmpCol);
+					}
 
 				} else {
 					tmpCol = myCol.get(myCol.indexOf(tmpCol));
 				}
 
 				if (!myTab.contains(tmpTab)) {
-					myTab.add(tmpTab);
+					synchronized (myTab) {
+						myTab.add(tmpTab);
+					}
 				} else {
 					tmpTab = myTab.get(myTab.indexOf(tmpTab));
 				}
 
 				if (!tmpTab.getColumns().contains(tmpCol)) {
+
 					tmpTab.addColumn(tmpCol);
 				}
 				if (!tmpCol.getTables().contains(tmpTab)) {
 					tmpCol.addTable(tmpTab);
 				}
 
-				// System.out.println(tmpTab.list());
-
-				//if (tmpTab.getName().equals("TABLE_SCHEMA") 
-				/*
-															 * ||
-															 * tmpTab.getName(
-															 * ).equals(
-															 * "REFERENTIAL_CONSTRAINTS"
-															 * ) ||
-															 * tmpTab.getName
-															 * ().equals
-															 * ("TABLE_CONSTRAINTS"
-															 * )
-															 *) {*/
-				//	System.out.println(tmpTab.list());
-				//}
-
 			}
-		//	System.out.println("fine");
-
-			/*
-			 * La colonna a_aname(di tipo string) e' condivisa fra la tabella a
-			 * e la tabella b la colonna a_name crea un oggetto tabella nuovo (
-			 * c ) con due elementi colonna: un sequence e se stesso. in tutte
-			 * le tabelle che originariamente referenziavano la colonna a_name
-			 * verra rimossa questa relazione e verra' creata una nuova
-			 * relazione con la colonna id della tabella c
-			 * 
-			 * 
-			 * 
-			 * aggiornando il type delle colonne referenziate dalle tabelle al
-			 * tipo con lo stesso nome dellatabella c
-			 */
-			Column col;
-			Column[] myColFreeze = new Column[myCol.size()];
-			myCol.toArray(myColFreeze);
-			for (int i=0;i<myColFreeze.length;i++) {
-				
-				col = myColFreeze[i];
-				
-				if (col.getTables().size() > 1) {
-				//	System.out.println(col);
-					Column origData = col.clone();
-
-					Table keyTab = new Table(col.getName());
-					Column id = new Column("id");
-					id.addTable(keyTab);
-					id.setType("int");
-					keyTab.addColumn(id);
-					keyTab.addColumn(origData);
-
-					myTab.add(keyTab);
-					myCol.add(id);
-					myCol.add(origData);
-
-					col.setType(col.getName());
-				}
-			}
-			// java.util.ConcurrentModificationException
-
+			createKeysOnColumnName();
 			for (Table tab : myTab) {
 				logger.append(tab.list());
 			}
@@ -200,6 +142,55 @@ public class SchemaSetup {
 		} catch (SQLException ex) {
 			logger.close();
 			ex.printStackTrace();
+		}
+	}
+
+	private void createKeysOnColumnName() {
+
+		/*
+		 * La colonna a_aname(di tipo string) e' condivisa fra la tabella a e la
+		 * tabella b la colonna a_name crea un oggetto tabella nuovo ( c ) con
+		 * due elementi colonna: un sequence e se stesso. in tutte le tabelle
+		 * che originariamente referenziavano la colonna a_name verra rimossa
+		 * questa relazione e verra' creata una nuova relazione con la colonna
+		 * id della tabella c
+		 * 
+		 * 
+		 * 
+		 * aggiornando il type delle colonne referenziate dalle tabelle al tipo
+		 * con lo stesso nome dellatabella c
+		 */
+
+		Column col;
+		Column[] myColFreeze = new Column[myCol.size()];
+		synchronized(myCol){
+			myCol.toArray(myColFreeze);
+		}
+		for (int i = 0; i < myColFreeze.length; i++) {
+
+			col = myColFreeze[i];
+
+			if (col.getTables().size() > 1) {
+				// System.out.println(col);
+				Column origData = col.clone();
+
+				Table keyTab = new Table(col.getName());
+				Column id = new Column("id");
+				id.addTable(keyTab);
+				id.setType("int");
+				keyTab.addColumn(id);
+				keyTab.addColumn(origData);
+
+				synchronized (myTab) {
+					myTab.add(keyTab);
+					synchronized (myCol) {
+						myCol.add(id);
+						myCol.add(origData);
+					}
+				}
+
+				col.setType(col.getName());
+			}
 		}
 	}
 }
