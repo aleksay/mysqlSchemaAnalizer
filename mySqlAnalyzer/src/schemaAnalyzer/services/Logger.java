@@ -45,6 +45,7 @@ public class Logger {
 	
 	public void close(){
 		try {
+			this.append("fine logging");
 			out.flush();
 			out.close();
 		} catch (IOException e) {

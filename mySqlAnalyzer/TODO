@@ -1,6 +1,6 @@
 In questo file si terra' traccia di evolutive e miglioramenti al progetto di cui discutere e valutare se inserire nel progetto o no.
 
-
+-SERIALIZZARE il risultato della prima query per snellire l'esecuzione in fase di sviluppo
 -Scrivere un file temporaneo data per non tenere tutta la struttura in memoria
 -Scrivere un file del tipo chiave,valore per le query, in vista di un espansione ad altri tipi di dbms
 -Rendere le strutture dati sincronizzate in modo da parallelizzare il lavoro su ogni chiave
