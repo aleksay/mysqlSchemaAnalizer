@@ -9,7 +9,7 @@ and open the template in the editor.
     <port>3306</port>
     <user>root</user>
     <password>ale</password>
-    <schema>information_schema</schema> 
+    <schema>bugs</schema> 
     <parameters>			<!-- not implemented yet -->
 	<parameter type=''></parameter>
     </parameters>
