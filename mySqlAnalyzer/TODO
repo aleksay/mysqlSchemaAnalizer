@@ -6,3 +6,5 @@ In questo file si terra' traccia di evolutive e miglioramenti al progetto di cui
 -Rendere le strutture dati sincronizzate in modo da parallelizzare il lavoro su ogni chiave
 	-generare un package ancora piu interno per ospitare le classi dei vari Thread
 
+
+-key_column_usage questa e' la  tabella per le chiavi
