@@ -193,4 +193,48 @@ public class SchemaSetup {
 			}
 		}
 	}
+	
+	public void keyExtractor(){
+		
+		/*
+		 * Query di estrazione dedicata esclusivamente alle foreign key...
+		 * manca la selezione dello schema o della tabella dipende come la si vuole fare
+		 
+		 select
+			t.CONSTRAINT_NAME, 
+			t.TABLE_SCHEMA, 
+			t.TABLE_NAME, 
+			k.COLUMN_NAME,	
+			k.REFERENCED_TABLE_NAME,
+			k.REFERENCED_COLUMN_NAME,
+			t.CONSTRAINT_TYPE,
+			r.UPDATE_RULE,
+			r.DELETE_RULE
+		from 
+			key_column_usage k,
+			referential_constraints r,
+			table_constraints t
+		where
+			t.CONSTRAINT_NAME = r.CONSTRAINT_NAME and
+			t.CONSTRAINT_NAME = k.CONSTRAINT_NAME;
+		 */
+		
+		/*
+		 * questa invece per le primary key, manca la selezione per table_name
+		 * forse si potrebbe fare un po piu articolata ma questa dovrebbe gia fornire le info necessarie. 
+		 * 
+		 select
+ 			TABLE_SCHEMA,TABLE_NAME,COLUMN_NAME,CONSTRAINT_NAME
+		from 
+			key_column_usage
+		where
+			CONSTRAINT_NAME = 'PRIMARY';
+		 */
+		
+		
+	}
+	
+	
+	
+	
 }
