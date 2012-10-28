@@ -1,0 +1,4 @@
+keys=select TABLE_SCHEMA,TABLE_NAME,COLUMN_NAME,CONSTRAINT_NAME from key_column_usage where COLUMN_NAME = ? and TABLE_NAME = ? and TABLE_SCHEMA = ? and CONSTRAINT_NAME = 'PRIMARY'
+tabCol=select c1.column_name, c1.table_name from columns c1 where c1.table_schema = ? and c1.column_name in (select distinct(c2.column_name) from columns c2 where c2.table_schema=?) order by c1.column_name
+datatype=SELECT DATA_TYPE from COLUMNS where COLUMN_NAME = ? and TABLE_SCHEMA = ? and TABLE_NAME = ?
+

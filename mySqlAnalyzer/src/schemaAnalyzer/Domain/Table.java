@@ -19,6 +19,7 @@ public class Table implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private String name;
     private LinkedList<Column> columns;
+    private Column key;
 
     public Table(String name) {
         this.name = name;
@@ -29,7 +30,15 @@ public class Table implements Serializable {
         return name;
     }
 
-    public void addColumn(Column col) {
+    public Column getKey() {
+		return key;
+	}
+
+	public void setKey(Column key) {
+		this.key = key;
+	}
+
+	public void addColumn(Column col) {
         columns.add(col);
     }
 
@@ -54,10 +63,12 @@ public class Table implements Serializable {
     
     public String list(){
         
+    	String z;
+    	if(getKey() != null){
+    		z = this.name+";" + getKey();    		
+    	}
+    	else z = "";
     	
-    	
-    	
-    	String z = "";
         for (Column c : columns) {
             z += this.name+";" + c ;
         }

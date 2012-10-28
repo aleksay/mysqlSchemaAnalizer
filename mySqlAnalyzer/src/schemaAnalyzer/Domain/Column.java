@@ -20,10 +20,12 @@ public class Column implements Serializable, Cloneable  {
 	private String name;
     private String type;
     private LinkedList<Table> tables;
+    private Table tableKeyOf;
 
     public Column(String name) {
         this.name = name;
         tables = new LinkedList<Table>();
+        
     }
 
     public String getName() {
@@ -41,6 +43,15 @@ public class Column implements Serializable, Cloneable  {
     public List<Table> getTables() {
         return tables;
     }
+    
+    public synchronized void setTableKeyOf(Table tab) {
+        tableKeyOf = tab;
+    }
+
+    public Table getTablesKeyOf() {
+        return tableKeyOf;
+    }
+    
 
     public synchronized void setType(String type) {
         this.type = type;
@@ -75,8 +86,12 @@ public class Column implements Serializable, Cloneable  {
     @Override
     public String toString() {
 
-        return name + ";" + type + "\n";
-        
+    	if(tableKeyOf != null){    	
+    		    		
+    		return name + ";" + type + "; *\n";
+    	}
+    	else
+    		return name + ";" + type + ";\n";
     }
     public String list(){
         String z = this.toString();

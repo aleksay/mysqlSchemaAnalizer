@@ -1,14 +1,14 @@
 package schemaAnalyzer.services;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.SortedMap;
-import java.util.TreeMap;
+import java.util.Properties;
 
 import schemaAnalyzer.Domain.Column;
 import schemaAnalyzer.Domain.Table;
@@ -16,17 +16,162 @@ import schemaAnalyzer.Domain.Table;
 public class SchemaSetup {
 
 	static final Logger logger = new Logger();
-	List<Column> myCol = Collections.synchronizedList(new LinkedList<Column>()); 
-	List<Table>  myTab = Collections.synchronizedList(new LinkedList<Table>()); 
+	List<Column> myCol;
+	List<Table> myTab;
+	Properties queryLoader;
+	Connection dbConnection;
+	String mySchema;
 
-	public void createSchema(Connection dbConnection, String mySchema) {
+	public SchemaSetup(Connection dbConnection, Properties prop, String mySchema) {
+		super();
+		this.myCol = Collections.synchronizedList(new LinkedList<Column>());
+		this.myTab = Collections.synchronizedList(new LinkedList<Table>());
+		queryLoader = prop;
+		this.dbConnection = dbConnection;
+		this.mySchema = mySchema;
+	}
+
+	public Table getTable(String tableName) {
+
+		Table tmpTable = new Table(tableName);
+		for (Table tab : myTab) {
+			if (tab.equals(tmpTable)) {
+				return tab;
+			}
+		}
+		return null;
+	}
+
+	public Column getColumn(String columnName) {
+
+		Column tmpColumn = new Column(columnName);
+		for (Column col : myCol) {
+			if (col.equals(tmpColumn)) {
+				return col;
+			}
+		}
+		return null;
+	}
+
+	public void loadSchema() {
+		try {
+
+			Column tmpCol;
+			Table tmpTab;
+
+			PreparedStatement colTabSt = dbConnection
+					.prepareStatement(queryLoader.getProperty("tabCol"));
+			
+			colTabSt.setString(1, mySchema);
+			colTabSt.setString(2, mySchema);
+
+			logger.append("inizio recupero info\n");
+			ResultSet colTab = colTabSt.executeQuery();
+			logger.append("fine recupero info\n");
+
+			while (colTab.next()) {
+				tmpCol = new Column(colTab.getString(1));
+				tmpTab = new Table(colTab.getString(2));
+
+				setDataType(tmpCol,tmpTab);				
+				
+				if(myTab.contains(tmpTab)){
+					tmpTab = myTab.get(myTab.indexOf(tmpTab));
+				}else{
+					myTab.add(tmpTab);
+				}
+				if (isKey(tmpCol, tmpTab)) {
+					if (tmpTab.getKey() != null) {
+						throw new IllegalStateException(
+								"tabella con piu di una chiave");
+					}
+					tmpTab.setKey(tmpCol);
+					tmpCol.setTableKeyOf(tmpTab);
+					
+				}else if(!tmpTab.getColumns().contains(tmpCol)){
+					
+					tmpTab.getColumns().add(tmpCol);
+					
+				}else{
+					
+					logger.append("relazione tabella colonna ripetuta\n");
+				}
+			}
+			printReport();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	public void printReport(){
+		logger.append("------------report--------------------");
+		for (Table tab : myTab) {
+			logger.append(tab.list());
+		}
+	}
+	
+	public boolean isKey(Column col, Table tab) {
+
+		try {
+			PreparedStatement isKey = dbConnection.prepareStatement(queryLoader
+					.getProperty("keys"));
+			isKey.setString(1, col.getName());
+			isKey.setString(2, tab.getName());
+			isKey.setString(3, mySchema);
+
+			ResultSet keys = isKey.executeQuery();
+
+			int occurrence = 0;
+			while (keys.next())
+				occurrence++;
+
+			return occurrence == 1;
+
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return false;
+	}
+
+	public void setDataType(Column tmpCol, Table tmpTab) {
+
+		PreparedStatement dataType;
+		try {
+			dataType = dbConnection.prepareStatement(queryLoader.getProperty("datatype"));
+
+			dataType.setString(1, tmpCol.getName());
+			dataType.setString(2, mySchema);
+			dataType.setString(3, tmpTab.getName());
+
+			ResultSet result = dataType.executeQuery();
+			if (!result.first()) {
+				throw new IllegalStateException("la colonna "
+						+ tmpCol.getName() + "non ha  tipo");
+			}
+
+			String sqlType = result.getString(1);
+			if (sqlType.equals("int") || sqlType.equals("char")	|| sqlType.equals("enum")) {
+				tmpCol.setType(TypeMatching.getJavaType(SqlTypes.valueOf("sql_"	+ sqlType)));
+			} else {
+				tmpCol.setType(TypeMatching.getJavaType(SqlTypes.valueOf(sqlType)));
+
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	/*public void createSchema() {
 
 		try {
 
 			Statement st = dbConnection.createStatement();
 			Statement st2 = dbConnection.createStatement();
 
-			/*
+			
 			 * ResultSet info = st.executeQuery("select " + "TABLE_CATALOG, " +
 			 * "TABLE_SCHEMA," + "TABLE_NAME," + "COLUMN_NAME," +
 			 * "ORDINAL_POSITION," + "COLUMN_DEFAULT," + "IS_NULLABLE," +
@@ -42,9 +187,9 @@ public class SchemaSetup {
 			 * info.getString(i)+", "; } // System.out.println(z);
 			 * 
 			 * }
-			 */
+			 
 
-			/**
+			*//**
 			 * lancio di createClass(String name,Statement st)
 			 * 
 			 * ResultSet tables = st.executeQuery("select TABLE_NAME from TABLES
@@ -55,8 +200,8 @@ public class SchemaSetup {
 			 * while(tables.next()){ tableNames.add(tables.getString(1)); }
 			 * 
 			 * for(String table: tableNames){ createClass(table,st); }
-			 */
-			/*
+			 *//*
+			
 			 * seleziona le tabelle divise per colonne
 			 * 
 			 * select c1.column_name, concat(', '),c1.table_name from columns c1
@@ -71,7 +216,7 @@ public class SchemaSetup {
 			 * loro sulla base di una colonna in comune. m2 invece mantiene una
 			 * relazione tra colonne acuulunate dal fatto di appartenere alla
 			 * stessa tabella.
-			 */
+			 
 
 			ResultSet columnTables = st
 					.executeQuery("select c1.column_name, c1.table_name from columns c1 where c1.table_schema='"
@@ -90,7 +235,7 @@ public class SchemaSetup {
 				// System.out.println("myCol.contains(tmpCol): " +
 				// myCol.contains(tmpCol));
 				if (!myCol.contains(tmpCol)) {
-					
+
 					ResultSet result = st2
 							.executeQuery("SELECT DATA_TYPE from COLUMNS where COLUMN_NAME='"
 									+ tmpCol.getName() + "'");
@@ -100,11 +245,14 @@ public class SchemaSetup {
 					}
 
 					String sqlType = result.getString(1);
-					if (sqlType.equals("int") || sqlType.equals("char") || sqlType.equals("enum")) {
-						tmpCol.setType(TypeMatching.getJavaType(SqlTypes.valueOf("sql_" + sqlType)));
+					if (sqlType.equals("int") || sqlType.equals("char")
+							|| sqlType.equals("enum")) {
+						tmpCol.setType(TypeMatching.getJavaType(SqlTypes
+								.valueOf("sql_" + sqlType)));
 					} else {
-						tmpCol.setType(TypeMatching.getJavaType(SqlTypes.valueOf(sqlType)));
-						
+						tmpCol.setType(TypeMatching.getJavaType(SqlTypes
+								.valueOf(sqlType)));
+
 					}
 
 					synchronized (myCol) {
@@ -132,7 +280,10 @@ public class SchemaSetup {
 				}
 
 			}
-			createKeysOnColumnName();
+			// createKeysOnColumnName();
+			keyExtractor(dbConnection);
+
+			logger.append("------------report--------------------");
 			for (Table tab : myTab) {
 				logger.append(tab.list());
 			}
@@ -147,7 +298,7 @@ public class SchemaSetup {
 
 	private void createKeysOnColumnName() {
 
-		/*
+		
 		 * La colonna a_aname(di tipo string) e' condivisa fra la tabella a e la
 		 * tabella b la colonna a_name crea un oggetto tabella nuovo ( c ) con
 		 * due elementi colonna: un sequence e se stesso. in tutte le tabelle
@@ -159,11 +310,11 @@ public class SchemaSetup {
 		 * 
 		 * aggiornando il type delle colonne referenziate dalle tabelle al tipo
 		 * con lo stesso nome dellatabella c
-		 */
+		 
 
 		Column col;
 		Column[] myColFreeze = new Column[myCol.size()];
-		synchronized(myCol){
+		synchronized (myCol) {
 			myCol.toArray(myColFreeze);
 		}
 		for (int i = 0; i < myColFreeze.length; i++) {
@@ -192,49 +343,72 @@ public class SchemaSetup {
 				col.setType(col.getName());
 			}
 		}
-	}
-	
-	public void keyExtractor(){
-		
+	}*/
+
+	public void keyExtractor(Connection dbConnection) {
+
 		/*
-		 * Query di estrazione dedicata esclusivamente alle foreign key...
-		 * manca la selezione dello schema o della tabella dipende come la si vuole fare
-		 
-		 select
-			t.CONSTRAINT_NAME, 
-			t.TABLE_SCHEMA, 
-			t.TABLE_NAME, 
-			k.COLUMN_NAME,	
-			k.REFERENCED_TABLE_NAME,
-			k.REFERENCED_COLUMN_NAME,
-			t.CONSTRAINT_TYPE,
-			r.UPDATE_RULE,
-			r.DELETE_RULE
-		from 
-			key_column_usage k,
-			referential_constraints r,
-			table_constraints t
-		where
-			t.CONSTRAINT_NAME = r.CONSTRAINT_NAME and
-			t.CONSTRAINT_NAME = k.CONSTRAINT_NAME;
+		 * Query di estrazione dedicata esclusivamente alle foreign key... manca
+		 * la selezione dello schema o della tabella dipende come la si vuole
+		 * fare
+		 * 
+		 * select t.CONSTRAINT_NAME, t.TABLE_SCHEMA, t.TABLE_NAME,
+		 * k.COLUMN_NAME, k.REFERENCED_TABLE_NAME, k.REFERENCED_COLUMN_NAME,
+		 * t.CONSTRAINT_TYPE, r.UPDATE_RULE, r.DELETE_RULE from key_column_usage
+		 * k, referential_constraints r, table_constraints t where
+		 * t.CONSTRAINT_NAME = r.CONSTRAINT_NAME and t.CONSTRAINT_NAME =
+		 * k.CONSTRAINT_NAME;
 		 */
-		
+
 		/*
 		 * questa invece per le primary key, manca la selezione per table_name
-		 * forse si potrebbe fare un po piu articolata ma questa dovrebbe gia fornire le info necessarie. 
+		 * forse si potrebbe fare un po piu articolata ma questa dovrebbe gia
+		 * fornire le info necessarie.
 		 * 
-		 select
- 			TABLE_SCHEMA,TABLE_NAME,COLUMN_NAME,CONSTRAINT_NAME
-		from 
-			key_column_usage
-		where
-			CONSTRAINT_NAME = 'PRIMARY';
+		 * select TABLE_SCHEMA,TABLE_NAME,COLUMN_NAME,CONSTRAINT_NAME from
+		 * key_column_usage where CONSTRAINT_NAME = 'PRIMARY' and
+		 * COLUMN_NAME='';
 		 */
-		
-		
+
+		Column[] myColFreeze = new Column[myCol.size()];
+		myCol.toArray(myColFreeze);
+		Table[] myTabFreeze;
+
+		myCol.toArray(myColFreeze);
+
+		for (Column col : myColFreeze) {
+
+			myTabFreeze = new Table[col.getTables().size()];
+			col.getTables().toArray(myTabFreeze);
+
+			for (Table tab : myTabFreeze) {
+				try {
+					Statement st = dbConnection.createStatement();
+
+					ResultSet reso = st
+							.executeQuery("select TABLE_SCHEMA,TABLE_NAME,COLUMN_NAME,CONSTRAINT_NAME "
+									+ "from key_column_usage "
+									+ "where CONSTRAINT_NAME = 'PRIMARY' and COLUMN_NAME='"
+									+ col.getName()
+									+ "' and TABLE_NAME='"
+									+ tab.getName() + "'");
+					// logger.append("found primary key on "+col.getName()+" for the table "+tab.getName());
+
+					while (reso.next()) {
+
+						Column tmpCol = getColumn(reso.getString(3));
+						Table tmpTab = getTable(reso.getString(2));
+
+						logger.append("found primary key: \n" + tmpCol
+								+ " \n on table " + tmpTab.getName() + "\n");
+						tmpCol.setTableKeyOf(tmpTab);
+					}
+
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		}
 	}
-	
-	
-	
-	
 }
