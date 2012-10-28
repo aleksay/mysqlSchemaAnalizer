@@ -98,6 +98,7 @@ public class SchemaSetup {
 				}
 			}
 			printReport();
+			logger.close();
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -105,7 +106,7 @@ public class SchemaSetup {
 	}
 
 	public void printReport(){
-		logger.append("------------report--------------------");
+		logger.append("------------report--------------------\n");
 		for (Table tab : myTab) {
 			logger.append(tab.list());
 		}

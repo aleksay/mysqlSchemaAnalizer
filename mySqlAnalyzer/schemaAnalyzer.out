@@ -1,0 +1,277 @@
+--------------------------------------------------------------
+inizio recupero info
+fine recupero info
+------------report--------------------
+bugs_activity;added;String;
+bugs_activity;attach_id;int;
+bugs_activity;bug_id;int;
+bugs_activity;bug_when;Date;
+bugs_activity;fieldid;int;
+bugs_activity;removed;String;
+bugs_activity;who;int;
+bugs;bug_id;int; *
+bugs;alias;String;
+bugs;assigned_to;int;
+bugs;bug_file_loc;String;
+bugs;bug_severity;String;
+bugs;bug_status;String;
+bugs;cclist_accessible;int;
+bugs;component_id;int;
+bugs;creation_ts;Date;
+bugs;deadline;Date;
+bugs;delta_ts;Date;
+bugs;estimated_time;double;
+bugs;everconfirmed;int;
+bugs;keywords;String;
+bugs;lastdiffed;Date;
+bugs;op_sys;String;
+bugs;priority;String;
+bugs;product_id;int;
+bugs;qa_contact;int;
+bugs;remaining_time;double;
+bugs;reporter;int;
+bugs;reporter_accessible;int;
+bugs;rep_platform;String;
+bugs;resolution;String;
+bugs;short_desc;String;
+bugs;status_whiteboard;String;
+bugs;target_milestone;String;
+bugs;version;String;
+bugs;votes;int;
+longdescs;comment_id;int; *
+longdescs;already_wrapped;int;
+longdescs;bug_id;int;
+longdescs;bug_when;Date;
+longdescs;extra_data;String;
+longdescs;isprivate;int;
+longdescs;thetext;String;
+longdescs;type;int;
+longdescs;who;int;
+longdescs;work_time;double;
+quips;quipid;int; *
+quips;approved;int;
+quips;quip;String;
+quips;userid;int;
+flags;id;int; *
+flags;attach_id;int;
+flags;bug_id;int;
+flags;creation_date;Date;
+flags;modification_date;Date;
+flags;requestee_id;int;
+flags;setter_id;int;
+flags;status;char;
+flags;type_id;int;
+attachments;attach_id;int; *
+attachments;bug_id;int;
+attachments;creation_ts;Date;
+attachments;description;String;
+attachments;filename;String;
+attachments;isobsolete;int;
+attachments;ispatch;int;
+attachments;isprivate;int;
+attachments;isurl;int;
+attachments;mimetype;String;
+attachments;submitter_id;int;
+dependencies;blocked;int;
+dependencies;dependson;int;
+whine_events;id;int; *
+whine_events;body;String;
+whine_events;owner_userid;int;
+whine_events;subject;String;
+keywords;bug_id;int;
+keywords;keywordid;int;
+votes;bug_id;int;
+votes;vote_count;int;
+votes;who;int;
+cc;bug_id;int;
+cc;who;int;
+bug_group_map;bug_id;int;
+bug_group_map;group_id;int;
+group_control_map;canconfirm;int;
+group_control_map;canedit;int;
+group_control_map;editbugs;int;
+group_control_map;editcomponents;int;
+group_control_map;entry;int;
+group_control_map;group_id;int;
+group_control_map;membercontrol;int;
+group_control_map;othercontrol;int;
+group_control_map;product_id;int;
+series;series_id;int; *
+series;category;int;
+series;creator;int;
+series;frequency;int;
+series;is_public;int;
+series;last_viewed;Date;
+series;name;String;
+series;query;String;
+series;subcategory;int;
+category_group_map;category_id;int;
+category_group_map;group_id;int;
+flagtypes;id;int; *
+flagtypes;cc_list;String;
+flagtypes;description;String;
+flagtypes;grant_group_id;int;
+flagtypes;is_active;int;
+flagtypes;is_multiplicable;int;
+flagtypes;is_requestable;int;
+flagtypes;is_requesteeble;int;
+flagtypes;name;String;
+flagtypes;request_group_id;int;
+flagtypes;sortkey;int;
+flagtypes;target_type;char;
+products;id;int; *
+products;classification_id;int;
+products;defaultmilestone;String;
+products;description;String;
+products;disallownew;int;
+products;maxvotesperbug;int;
+products;milestoneurl;String;
+products;name;String;
+products;votesperuser;int;
+products;votestoconfirm;int;
+flaginclusions;component_id;int;
+flaginclusions;product_id;int;
+flaginclusions;type_id;int;
+flagexclusions;component_id;int;
+flagexclusions;product_id;int;
+flagexclusions;type_id;int;
+component_cc;component_id;int;
+component_cc;user_id;int;
+logincookies;cookie;String; *
+logincookies;ipaddr;String;
+logincookies;lastused;Date;
+logincookies;userid;int;
+profiles;userid;int; *
+profiles;cryptpassword;String;
+profiles;disabledtext;String;
+profiles;disable_mail;int;
+profiles;extern_id;String;
+profiles;login_name;String;
+profiles;mybugslink;int;
+profiles;realname;String;
+fielddefs;id;int; *
+fielddefs;custom;int;
+fielddefs;description;String;
+fielddefs;enter_bug;int;
+fielddefs;mailhead;int;
+fielddefs;name;String;
+fielddefs;obsolete;int;
+fielddefs;sortkey;int;
+fielddefs;type;int;
+setting;name;String; *
+setting;default_value;String;
+setting;is_enabled;int;
+setting;subclass;String;
+keyworddefs;id;int; *
+keyworddefs;description;String;
+keyworddefs;name;String;
+groups;id;int; *
+groups;description;String;
+groups;isactive;int;
+groups;isbuggroup;int;
+groups;name;String;
+groups;userregexp;String;
+components;id;int; *
+components;description;String;
+components;initialowner;int;
+components;initialqacontact;int;
+components;name;String;
+components;product_id;int;
+classifications;id;int; *
+classifications;description;String;
+classifications;name;String;
+classifications;sortkey;int;
+duplicates;dupe;int; *
+duplicates;dupe_of;int;
+email_setting;event;int;
+email_setting;relationship;int;
+email_setting;user_id;int;
+tokens;token;String; *
+tokens;eventdata;String;
+tokens;issuedate;Date;
+tokens;tokentype;String;
+tokens;userid;int;
+whine_schedules;id;int; *
+whine_schedules;eventid;int;
+whine_schedules;mailto;int;
+whine_schedules;mailto_type;int;
+whine_schedules;run_day;String;
+whine_schedules;run_next;Date;
+whine_schedules;run_time;String;
+whine_queries;id;int; *
+whine_queries;eventid;int;
+whine_queries;onemailperbug;int;
+whine_queries;query_name;String;
+whine_queries;sortkey;int;
+whine_queries;title;String;
+profiles_activity;fieldid;int;
+profiles_activity;newvalue;String;
+profiles_activity;oldvalue;String;
+profiles_activity;profiles_when;Date;
+profiles_activity;userid;int;
+profiles_activity;who;int;
+group_group_map;grantor_id;int;
+group_group_map;grant_type;int;
+group_group_map;member_id;int;
+user_group_map;grant_type;int;
+user_group_map;group_id;int;
+user_group_map;isbless;int;
+user_group_map;user_id;int;
+namedquery_group_map;group_id;int;
+namedquery_group_map;namedquery_id;int;
+milestones;id;int; *
+milestones;product_id;int;
+milestones;sortkey;int;
+milestones;value;String;
+priority;id;int; *
+priority;isactive;int;
+priority;sortkey;int;
+priority;value;String;
+namedqueries;id;int; *
+namedqueries;name;String;
+namedqueries;query;String;
+namedqueries;query_type;int;
+namedqueries;userid;int;
+resolution;id;int; *
+resolution;isactive;int;
+resolution;sortkey;int;
+resolution;value;String;
+op_sys;id;int; *
+op_sys;isactive;int;
+op_sys;sortkey;int;
+op_sys;value;String;
+bug_severity;id;int; *
+bug_severity;isactive;int;
+bug_severity;sortkey;int;
+bug_severity;value;String;
+series_categories;id;int; *
+series_categories;name;String;
+rep_platform;id;int; *
+rep_platform;isactive;int;
+rep_platform;sortkey;int;
+rep_platform;value;String;
+versions;id;int; *
+versions;product_id;int;
+versions;value;String;
+attach_data;id;int; *
+attach_data;thedata;Object;
+bug_status;id;int; *
+bug_status;isactive;int;
+bug_status;sortkey;int;
+bug_status;value;String;
+setting_value;name;String;
+setting_value;sortindex;int;
+setting_value;value;String;
+namedqueries_link_in_footer;namedquery_id;int;
+namedqueries_link_in_footer;user_id;int;
+bz_schema;schema_data;Object;
+bz_schema;version;double;
+series_data;series_date;Date;
+series_data;series_id;int;
+series_data;series_value;int;
+profile_setting;setting_name;String;
+profile_setting;setting_value;String;
+profile_setting;user_id;int;
+watch;watched;int;
+watch;watcher;int;
+fine logging

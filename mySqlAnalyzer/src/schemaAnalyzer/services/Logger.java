@@ -16,7 +16,7 @@ public class Logger {
 			
 			if(logfile.exists() && logfile.canWrite()){
 				out = new FileWriter(logfile);
-				out.append("--------------------------------------------------------------");
+				out.append("--------------------------------------------------------------\n");
 			}else{
 				if (!logfile.createNewFile()) {
 					throw new IllegalStateException("impossibile creare il file di log");
