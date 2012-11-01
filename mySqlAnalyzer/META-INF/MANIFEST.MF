@@ -1,0 +1,12 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: mySqlAnalyzer
+Bundle-SymbolicName: mySqlAnalyzer;singleton:=true
+Bundle-Version: 0.0.1.qualifier
+Bundle-Activator: mySqlAnalyzer.Activator
+Require-Bundle: org.eclipse.core.runtime,
+ org.eclipse.gmt.modisco.infra.common.core,
+ org.eclipse.gmt.modisco.infra.query.core
+Bundle-RequiredExecutionEnvironment: J2SE-1.5
+Bundle-ActivationPolicy: lazy
+Bundle-ClassPath: .,bin
