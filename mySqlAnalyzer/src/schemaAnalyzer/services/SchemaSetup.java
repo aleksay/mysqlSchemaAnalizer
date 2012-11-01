@@ -30,6 +30,10 @@ public class SchemaSetup {
 		this.dbConnection = dbConnection;
 		this.mySchema = mySchema;
 	}
+	
+	public List<Table> getSchema(){
+		return myTab;
+	}
 
 	public Table getTable(String tableName) {
 
@@ -59,8 +63,7 @@ public class SchemaSetup {
 			Column tmpCol;
 			Table tmpTab;
 
-			PreparedStatement colTabSt = dbConnection
-					.prepareStatement(queryLoader.getProperty("tabCol"));
+			PreparedStatement colTabSt = dbConnection.prepareStatement(queryLoader.getProperty("tabCol"));
 			
 			colTabSt.setString(1, mySchema);
 			colTabSt.setString(2, mySchema);
@@ -80,13 +83,16 @@ public class SchemaSetup {
 				}else{
 					myTab.add(tmpTab);
 				}
-				if (isKey(tmpCol, tmpTab)) {
-					if (tmpTab.getKey() != null) {
-						throw new IllegalStateException(
-								"tabella con piu di una chiave");
-					}
-					tmpTab.setKey(tmpCol);
-					tmpCol.setTableKeyOf(tmpTab);
+				if (isPKey(tmpCol, tmpTab)) {
+					/*if (!tmpTab.getKey().isEmpty()) {
+						logger.append("la tabella "+tmpTab.getName()+ " ha piu di una chiave:\n");
+						logger.append(" vecchia: "+tmpTab.getKey()+" nuova: "+tmpCol+"\n");
+						
+					}*/
+					logger.append(tmpCol.getName() + " chiave di "+tmpTab.getName());
+					tmpTab.addKey(tmpCol);
+					//NON DA ERRORE MA COMPORTAMENTO INATTESO
+				//	tmpCol.setTableKeyOf(tmpTab);
 					
 				}else if(!tmpTab.getColumns().contains(tmpCol)){
 					
@@ -112,7 +118,7 @@ public class SchemaSetup {
 		}
 	}
 	
-	public boolean isKey(Column col, Table tab) {
+	public boolean isPKey(Column col, Table tab) {
 
 		try {
 			PreparedStatement isKey = dbConnection.prepareStatement(queryLoader
@@ -126,8 +132,11 @@ public class SchemaSetup {
 			int occurrence = 0;
 			while (keys.next())
 				occurrence++;
-
-			return occurrence == 1;
+			
+			if(occurrence > 1){
+				logger.append("isKey: trovate "+occurrence+" match per "+ col.getName()+" su table: "+tab.getName());
+			}
+			return occurrence > 0;
 
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block

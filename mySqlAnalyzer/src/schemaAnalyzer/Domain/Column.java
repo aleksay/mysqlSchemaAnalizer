@@ -48,9 +48,9 @@ public class Column implements Serializable, Cloneable  {
         tableKeyOf = tab;
     }
 
-    public Table getTablesKeyOf() {
+    /*public Table getTablesKeyOf() {
         return tableKeyOf;
-    }
+    }*/
     
 
     public synchronized void setType(String type) {

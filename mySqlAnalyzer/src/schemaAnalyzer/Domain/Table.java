@@ -19,23 +19,24 @@ public class Table implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private String name;
     private LinkedList<Column> columns;
-    private Column key;
+    private LinkedList<Column> keys;
 
     public Table(String name) {
         this.name = name;
         columns = new LinkedList<Column>();
+        keys = new LinkedList<Column>();
     }
 
     public String getName() {
         return name;
     }
 
-    public Column getKey() {
-		return key;
+    public LinkedList<Column> getKey() {
+		return keys;
 	}
 
-	public void setKey(Column key) {
-		this.key = key;
+	public void addKey(Column key) {
+		keys.add(key);
 	}
 
 	public void addColumn(Column col) {
@@ -64,8 +65,11 @@ public class Table implements Serializable {
     public String list(){
         
     	String z;
-    	if(getKey() != null){
-    		z = this.name+";" + getKey();    		
+    	if(!getKey().isEmpty()){
+    		z = this.name+";" ;
+    		for(Column c:keys){
+    			z += c;
+    		}
     	}
     	else z = "";
     	
