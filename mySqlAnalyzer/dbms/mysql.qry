@@ -1,4 +1,4 @@
-keys=select TABLE_SCHEMA,TABLE_NAME,COLUMN_NAME,CONSTRAINT_NAME from key_column_usage where COLUMN_NAME = ? and TABLE_NAME = ? and TABLE_SCHEMA = ? and CONSTRAINT_NAME = 'PRIMARY'
+keys= select distinct(k1.CONSTRAINT_NAME), k1.COLUMN_NAME,k1.TABLE_SCHEMA,k1.TABLE_NAME from key_column_usage k1 left join ( select r.UNIQUE_CONSTRAINT_NAME from key_column_usage k, referential_constraints r, table_constraints t where t.CONSTRAINT_NAME = r.CONSTRAINT_NAME and t.CONSTRAINT_NAME = k.CONSTRAINT_NAME and k.COLUMN_NAME = ? and k.TABLE_NAME = ? )fk on k1.CONSTRAINT_NAME = fk.UNIQUE_CONSTRAINT_NAME where k1.TABLE_NAME = ? and k1.TABLE_SCHEMA = ? and k1.COLUMN_NAME = ?  and fk.UNIQUE_CONSTRAINT_NAME is not null 
 tabCol=select c1.column_name, c1.table_name from columns c1 where c1.table_schema = ? and c1.column_name in (select distinct(c2.column_name) from columns c2 where c2.table_schema=?) order by c1.column_name
 datatype=SELECT DATA_TYPE from COLUMNS where COLUMN_NAME = ? and TABLE_SCHEMA = ? and TABLE_NAME = ?
 

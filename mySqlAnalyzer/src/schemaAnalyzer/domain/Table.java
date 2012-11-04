@@ -1,7 +1,7 @@
 /**
  * 
  */
-package schemaAnalyzer.Domain;
+package schemaAnalyzer.domain;
 
 import java.io.Serializable;
 import java.util.LinkedList;
@@ -64,14 +64,12 @@ public class Table implements Serializable {
     
     public String list(){
         
-    	String z;
+    	String z = "";
     	if(!getKey().isEmpty()){
-    		z = this.name+";" ;
     		for(Column c:keys){
-    			z += c;
+    			z += this.name+";" + c ;
     		}
-    	}
-    	else z = "";
+    	}    	
     	
         for (Column c : columns) {
             z += this.name+";" + c ;

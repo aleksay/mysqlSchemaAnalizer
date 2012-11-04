@@ -10,12 +10,12 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
 
-import schemaAnalyzer.Domain.Column;
-import schemaAnalyzer.Domain.Table;
+import schemaAnalyzer.domain.Column;
+import schemaAnalyzer.domain.Table;
 
 public class SchemaSetup {
 
-	static final Logger logger = new Logger();
+	Logger logger;
 	List<Column> myCol;
 	List<Table> myTab;
 	Properties queryLoader;
@@ -30,6 +30,17 @@ public class SchemaSetup {
 		this.dbConnection = dbConnection;
 		this.mySchema = mySchema;
 	}
+	
+	public SchemaSetup(Connection dbConnection, Properties prop, String mySchema, Logger logger) {
+		super();
+		this.myCol = Collections.synchronizedList(new LinkedList<Column>());
+		this.myTab = Collections.synchronizedList(new LinkedList<Table>());
+		queryLoader = prop;
+		this.dbConnection = dbConnection;
+		this.mySchema = mySchema;
+		this.logger = logger;
+	}
+	
 	
 	public List<Table> getSchema(){
 		return myTab;
@@ -68,9 +79,11 @@ public class SchemaSetup {
 			colTabSt.setString(1, mySchema);
 			colTabSt.setString(2, mySchema);
 
-			logger.append("inizio recupero info\n");
+			if(logger != null)
+				logger.append("inizio recupero info\n");
 			ResultSet colTab = colTabSt.executeQuery();
-			logger.append("fine recupero info\n");
+			if(logger != null)
+				logger.append("fine recupero info\n");
 
 			while (colTab.next()) {
 				tmpCol = new Column(colTab.getString(1));
@@ -89,22 +102,23 @@ public class SchemaSetup {
 						logger.append(" vecchia: "+tmpTab.getKey()+" nuova: "+tmpCol+"\n");
 						
 					}*/
-					logger.append(tmpCol.getName() + " chiave di "+tmpTab.getName());
+					if(logger != null)
+						logger.append(tmpCol.getName() + " chiave di "+tmpTab.getName());
 					tmpTab.addKey(tmpCol);
 					//NON DA ERRORE MA COMPORTAMENTO INATTESO
-				//	tmpCol.setTableKeyOf(tmpTab);
+					tmpCol.setTableKeyOf(tmpTab);
 					
 				}else if(!tmpTab.getColumns().contains(tmpCol)){
 					
 					tmpTab.getColumns().add(tmpCol);
 					
 				}else{
-					
-					logger.append("relazione tabella colonna ripetuta\n");
+					if(logger != null)
+						logger.append("relazione tabella colonna ripetuta\n");
 				}
 			}
 			printReport();
-			logger.close();
+			
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -112,7 +126,11 @@ public class SchemaSetup {
 	}
 
 	public void printReport(){
+		
+		if(logger == null) return;
+			
 		logger.append("------------report--------------------\n");
+		
 		for (Table tab : myTab) {
 			logger.append(tab.list());
 		}
@@ -125,8 +143,10 @@ public class SchemaSetup {
 					.getProperty("keys"));
 			isKey.setString(1, col.getName());
 			isKey.setString(2, tab.getName());
-			isKey.setString(3, mySchema);
-
+			isKey.setString(3, tab.getName());
+			isKey.setString(4, mySchema);
+			isKey.setString(5, col.getName());
+			
 			ResultSet keys = isKey.executeQuery();
 
 			int occurrence = 0;
@@ -134,7 +154,8 @@ public class SchemaSetup {
 				occurrence++;
 			
 			if(occurrence > 1){
-				logger.append("isKey: trovate "+occurrence+" match per "+ col.getName()+" su table: "+tab.getName());
+				if(logger != null)
+					logger.append("isKey: trovate "+occurrence+" match per "+ col.getName()+" su table: "+tab.getName());
 			}
 			return occurrence > 0;
 
@@ -355,22 +376,22 @@ public class SchemaSetup {
 		}
 	}*/
 
-	public void keyExtractor(Connection dbConnection) {
+/*	public void keyExtractor(Connection dbConnection) {
 
-		/*
+		
 		 * Query di estrazione dedicata esclusivamente alle foreign key... manca
 		 * la selezione dello schema o della tabella dipende come la si vuole
 		 * fare
 		 * 
-		 * select t.CONSTRAINT_NAME, t.TABLE_SCHEMA, t.TABLE_NAME,
-		 * k.COLUMN_NAME, k.REFERENCED_TABLE_NAME, k.REFERENCED_COLUMN_NAME,
-		 * t.CONSTRAINT_TYPE, r.UPDATE_RULE, r.DELETE_RULE from key_column_usage
-		 * k, referential_constraints r, table_constraints t where
-		 * t.CONSTRAINT_NAME = r.CONSTRAINT_NAME and t.CONSTRAINT_NAME =
-		 * k.CONSTRAINT_NAME;
-		 */
+		  select t.CONSTRAINT_NAME, t.TABLE_SCHEMA, t.TABLE_NAME,
+		  k.COLUMN_NAME, k.REFERENCED_TABLE_NAME, k.REFERENCED_COLUMN_NAME,
+		  t.CONSTRAINT_TYPE, r.UPDATE_RULE, r.DELETE_RULE from key_column_usage
+		  k, referential_constraints r, table_constraints t where
+		  t.CONSTRAINT_NAME = r.CONSTRAINT_NAME and t.CONSTRAINT_NAME =
+		  k.CONSTRAINT_NAME;
+		 
 
-		/*
+		
 		 * questa invece per le primary key, manca la selezione per table_name
 		 * forse si potrebbe fare un po piu articolata ma questa dovrebbe gia
 		 * fornire le info necessarie.
@@ -378,7 +399,7 @@ public class SchemaSetup {
 		 * select TABLE_SCHEMA,TABLE_NAME,COLUMN_NAME,CONSTRAINT_NAME from
 		 * key_column_usage where CONSTRAINT_NAME = 'PRIMARY' and
 		 * COLUMN_NAME='';
-		 */
+		 
 
 		Column[] myColFreeze = new Column[myCol.size()];
 		myCol.toArray(myColFreeze);
@@ -388,8 +409,8 @@ public class SchemaSetup {
 
 		for (Column col : myColFreeze) {
 
-			myTabFreeze = new Table[col.getTables().size()];
-			col.getTables().toArray(myTabFreeze);
+	//		myTabFreeze = new Table[col.getTables().size()];
+	//		col.getTables().toArray(myTabFreeze);
 
 			for (Table tab : myTabFreeze) {
 				try {
@@ -420,5 +441,5 @@ public class SchemaSetup {
 				}
 			}
 		}
-	}
+	}*/
 }

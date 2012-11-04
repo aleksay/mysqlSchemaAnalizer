@@ -1,7 +1,7 @@
 /**
  * 
  */
-package schemaAnalyzer.Domain;
+package schemaAnalyzer.domain;
 
 import java.io.Serializable;
 import java.util.LinkedList;
@@ -19,12 +19,12 @@ public class Column implements Serializable, Cloneable  {
 	private static final long serialVersionUID = 1L;
 	private String name;
     private String type;
-    private LinkedList<Table> tables;
+   // private LinkedList<Table> tables;
     private Table tableKeyOf;
 
     public Column(String name) {
         this.name = name;
-        tables = new LinkedList<Table>();
+    //    tables = new LinkedList<Table>();
         
     }
 
@@ -36,13 +36,13 @@ public class Column implements Serializable, Cloneable  {
         this.name = name;
     }
 
-    public synchronized void addTable(Table tab) {
+    /*public synchronized void addTable(Table tab) {
         tables.add(tab);
     }
 
     public List<Table> getTables() {
         return tables;
-    }
+    }*/
     
     public synchronized void setTableKeyOf(Table tab) {
         tableKeyOf = tab;
@@ -77,9 +77,9 @@ public class Column implements Serializable, Cloneable  {
         
         Column c = new Column(this.getName());
         c.type = this.getType();
-        for(Table t: this.getTables()){
+       /* for(Table t: this.getTables()){
             c.addTable(t);
-        }
+        }*/
         return c;
     }
 
@@ -88,16 +88,16 @@ public class Column implements Serializable, Cloneable  {
 
     	if(tableKeyOf != null){    	
     		    		
-    		return name + ";" + type + "; *\n";
+    		return name + ";" + type + "; * \n";
     	}
     	else
     		return name + ";" + type + ";\n";
     }
     public String list(){
         String z = this.toString();
-        for (Table c : tables) {
+       /* for (Table c : tables) {
             z += "   " + c ;
-        }        
+        }*/        
         return z;
     }
 }

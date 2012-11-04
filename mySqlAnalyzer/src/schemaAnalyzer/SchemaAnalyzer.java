@@ -41,12 +41,14 @@ public class SchemaAnalyzer {
 
 	public static void main(String[] args) throws SQLException {
  
+		Logger logger = new Logger();
 		Connection dbConnection = createConnection();
-		SchemaSetup mySetup = new SchemaSetup(dbConnection,getQuery(),dbSchema);
+		SchemaSetup mySetup = new SchemaSetup(dbConnection,getQuery(),dbSchema, logger);
 		//mySetup.createSchema();
 		
 		mySetup.loadSchema();
 		dbConnection.close();
+		logger.close();
 	}
 	
 	private static String getJdbcLink(){
@@ -55,7 +57,7 @@ public class SchemaAnalyzer {
 		return "jdbc:mysql://"+dbAddress+":"+dbPort+"/information_schema";
 	}	
 
-	private static void loadConnection() {
+	public static void loadConnection() {
 		try {
 			File fXmlFile = new File("./configureMyApp.xml");
 			DocumentBuilderFactory dbFactory = DocumentBuilderFactory
@@ -129,6 +131,10 @@ public class SchemaAnalyzer {
 		
 		
 		return prop;
+	}
+
+	public static String getDbSchema() {
+		return dbSchema;
 	}
 	
 	
