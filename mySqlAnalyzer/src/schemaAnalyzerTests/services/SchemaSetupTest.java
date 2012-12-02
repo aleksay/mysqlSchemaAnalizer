@@ -69,10 +69,25 @@ public class SchemaSetupTest {
 		testTable.addColumn(subject);
 		
 		
-		
-		
-		
 		Table sampledTable = schema.getTable("whine_events");
+		
+		System.out.println("sampleTable: "+sampledTable.list());
+		System.out.println("test table: "+testTable.list());
+		/*
+sampleTable: whine_events;body;String;
+whine_events;id;int;
+whine_events;mailifnobugs;int;
+whine_events;owner_userid;int;
+whine_events;subject;String;
+
+test table: whine_events;id;int; * 
+whine_events;body;String;
+whine_events;mailifnobugs;null;
+whine_events;owner_userid;null;
+whine_events;subject;null;
+ 
+		 */
+		
 		
 		Assert.assertEquals("comparision between tables failed", testTable, sampledTable);
 		Assert.assertEquals("comparision between key failed", testTable.getKey(), sampledTable.getKey());
@@ -101,6 +116,10 @@ public class SchemaSetupTest {
 		testTable.addKey(user_id);
 		
 		Table sampleTable = schema.getTable("namedqueries_link_in_footer");
+		
+		System.out.println("sampleTable: "+sampleTable.list());
+		System.out.println("test table: "+testTable.list());
+		
 		
 		Assert.assertEquals(testTable, sampleTable);
 		Assert.assertTrue(sampleTable.getColumns().isEmpty());
